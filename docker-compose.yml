@@ -1,0 +1,188 @@
+# ===========================================
+# FirewallAI - Docker Compose Configuration
+# ===========================================
+# Production deployment with all services
+# Run: docker-compose up -d
+# ===========================================
+
+version: '3.8'
+
+services:
+  # ===========================================
+  # Frontend - React Dashboard (Vite)
+  # ===========================================
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: firewallai-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_BACKEND_URL=${VITE_BACKEND_URL:-http://backend:3001}
+      - VITE_GRAFANA_URL=${VITE_GRAFANA_URL:-http://grafana:3000}
+    depends_on:
+      - backend
+    networks:
+      - firewallai-network
+    volumes:
+      - ./src:/app/src:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5173"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ===========================================
+  # Backend - Node.js API Server
+  # ===========================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: firewallai-backend
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+      - PORT=3001
+      - HOST=0.0.0.0
+      - PFSENSE_HOST=${PFSENSE_HOST}
+      - PFSENSE_USER=${PFSENSE_USER}
+      - PFSENSE_PASSWORD=${PFSENSE_PASSWORD}
+      - OLLAMA_URL=${OLLAMA_URL:-http://ollama:11434}
+    depends_on:
+      - influxdb
+    networks:
+      - firewallai-network
+    volumes:
+      - backend-logs:/var/log/firewallai
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ===========================================
+  # InfluxDB - Time-Series Database
+  # ===========================================
+  influxdb:
+    image: influxdb:2.7
+    container_name: firewallai-influxdb
+    restart: unless-stopped
+    ports:
+      - "8086:8086"
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=${INFLUXDB_USER:-admin}
+      - DOCKER_INFLUXDB_INIT_PASSWORD=${INFLUXDB_PASSWORD:-influxdb123}
+      - DOCKER_INFLUXDB_INIT_ORG=${INFLUXDB_ORG:-firewallai}
+      - DOCKER_INFLUXDB_INIT_BUCKET=${INFLUXDB_BUCKET:-pfsense}
+    volumes:
+      - influxdb-data:/var/lib/influxdb2
+      - influxdb-config:/etc/influxdb2
+    networks:
+      - firewallai-network
+    healthcheck:
+      test: ["CMD", "influx", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ===========================================
+  # Grafana - Monitoring Dashboards
+  # ===========================================
+  grafana:
+    image: grafana/grafana:10.2.0
+    container_name: firewallai-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-grafana123}
+      - GF_SECURITY_ALLOW_EMBEDDING=true
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
+      - GF_SECURITY_COOKIE_SAMESITE=disabled
+      - GF_SERVER_ROOT_URL=${GRAFANA_URL:-http://localhost:3000}
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
+    depends_on:
+      - influxdb
+    networks:
+      - firewallai-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ===========================================
+  # Ollama - Local AI/LLM Service
+  # ===========================================
+  ollama:
+    image: ollama/ollama:latest
+    container_name: firewallai-ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-models:/root/.ollama
+    networks:
+      - firewallai-network
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    # Comment out the deploy section above if no GPU is available
+
+  # ===========================================
+  # Telegraf - Metrics Collection Agent
+  # ===========================================
+  telegraf:
+    image: telegraf:1.28
+    container_name: firewallai-telegraf
+    restart: unless-stopped
+    environment:
+      - HOST_ETC=/hostfs/etc
+      - HOST_PROC=/hostfs/proc
+      - HOST_SYS=/hostfs/sys
+    volumes:
+      - ./docker/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+      - /:/hostfs:ro
+    depends_on:
+      - influxdb
+    networks:
+      - firewallai-network
+
+# ===========================================
+# Networks
+# ===========================================
+networks:
+  firewallai-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
+
+# ===========================================
+# Volumes
+# ===========================================
+volumes:
+  influxdb-data:
+    driver: local
+  influxdb-config:
+    driver: local
+  grafana-data:
+    driver: local
+  ollama-models:
+    driver: local
+  backend-logs:
+    driver: local

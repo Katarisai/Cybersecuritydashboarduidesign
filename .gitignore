@@ -1,0 +1,107 @@
+# ===========================================
+# FirewallAI - Git Ignore Configuration
+# ===========================================
+
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+dist/
+dist-ssr/
+build/
+*.local
+
+# Environment files (NEVER commit real secrets!)
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# IDE and editor files
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+.project
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Test coverage
+coverage/
+*.lcov
+.nyc_output/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Vite cache
+.vite/
+
+# Binary files (download on install, don't commit!)
+*.exe
+plink.exe
+pscp.exe
+putty.exe
+
+# SSH keys (NEVER commit!)
+*.pem
+*.key
+id_rsa*
+*.ppk
+
+# Docker volumes
+docker-data/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Backend specific
+backend/node_modules/
+backend/*.log
+backend/ai_blocklist.txt
+
+# Grafana provisioning secrets
+docker/grafana/provisioning/datasources/secrets/
+
+# Local development scripts output
+*.bak
+*.orig

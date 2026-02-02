@@ -24,7 +24,7 @@ const generateRandomLog = (): Log => {
   const severities = ['low', 'medium', 'high'];
 
   const action = Math.random() > 0.7 ? 'BLOCKED' : 'ALLOWED';
-  const severity = action === 'BLOCKED' 
+  const severity = action === 'BLOCKED'
     ? (Math.random() > 0.5 ? 'high' : 'medium')
     : 'low';
 
@@ -75,7 +75,7 @@ export function LogsPage() {
 
   // Filter logs based on search and filters
   const filteredLogs = logs.filter(log => {
-    const matchesSearch = searchQuery === '' || 
+    const matchesSearch = searchQuery === '' ||
       log.sourceIP.includes(searchQuery) ||
       log.destination.includes(searchQuery) ||
       log.protocol.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -112,23 +112,24 @@ export function LogsPage() {
       {/* Header with filters */}
       <div className="flex items-center justify-between">
         <div>
-          <h2>Logs & Big Data Monitoring</h2>
-          <p className="text-sm text-muted-foreground mt-1">Real-time firewall log stream</p>
+          <h2 className="text-2xl font-bold">Logs & Big Data Monitoring</h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            Real-time firewall log stream with search, filtering, and export capabilities
+          </p>
         </div>
-        
+
         <div className="flex items-center gap-2">
-          <button 
+          <button
             onClick={() => setAutoRefresh(!autoRefresh)}
-            className={`flex items-center gap-2 rounded-lg border px-4 py-2 transition-colors ${
-              autoRefresh 
-                ? 'border-primary bg-primary/10 text-primary' 
+            className={`flex items-center gap-2 rounded-lg border px-4 py-2 transition-colors ${autoRefresh
+                ? 'border-primary bg-primary/10 text-primary'
                 : 'border-border bg-card hover:bg-muted'
-            }`}
+              }`}
           >
             <RefreshCw className={`h-4 w-4 ${autoRefresh ? 'animate-spin' : ''}`} />
             <span className="text-sm">{autoRefresh ? 'Live' : 'Paused'}</span>
           </button>
-          <button 
+          <button
             onClick={handleExport}
             className="flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 hover:bg-muted transition-colors"
           >
@@ -152,8 +153,8 @@ export function LogsPage() {
             />
           </div>
         </div>
-        
-        <select 
+
+        <select
           value={severityFilter}
           onChange={(e) => setSeverityFilter(e.target.value)}
           className="rounded-lg border border-border bg-input-background px-4 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
@@ -164,7 +165,7 @@ export function LogsPage() {
           <option value="low">Low</option>
         </select>
 
-        <select 
+        <select
           value={timeFilter}
           onChange={(e) => setTimeFilter(e.target.value)}
           className="rounded-lg border border-border bg-input-background px-4 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"

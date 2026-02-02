@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { CheckCircle, XCircle, AlertTriangle, Lightbulb, Trash2, Plus } from 'lucide-react';
+import { AIRuleGenerator } from './ui/AIRuleGenerator';
 
 interface FirewallRule {
   id: string;
@@ -28,8 +29,8 @@ export function FirewallRulesPage() {
   const [showAddRule, setShowAddRule] = useState(false);
 
   const handleToggleStatus = (ruleId: string) => {
-    setRules(prev => prev.map(rule => 
-      rule.id === ruleId 
+    setRules(prev => prev.map(rule =>
+      rule.id === ruleId
         ? { ...rule, status: rule.status === 'active' ? 'inactive' : 'active' }
         : rule
     ));
@@ -73,10 +74,12 @@ export function FirewallRulesPage() {
       <div className="col-span-2 space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2>Firewall Rules</h2>
-            <p className="text-sm text-muted-foreground mt-1">Manage and optimize pfSense firewall rules</p>
+            <h2 className="text-2xl font-bold">Firewall Rules</h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              Manage, optimize, and analyze pfSense firewall rules with AI-powered suggestions
+            </p>
           </div>
-          <button 
+          <button
             onClick={() => setShowAddRule(!showAddRule)}
             className="flex items-center gap-2 rounded-lg border border-primary bg-primary/10 px-4 py-2 text-sm font-medium text-primary hover:bg-primary/20 transition-colors"
           >
@@ -84,6 +87,9 @@ export function FirewallRulesPage() {
             Add Rule
           </button>
         </div>
+
+        {/* --- ADDED AI RULE GENERATOR COMPONENT HERE --- */}
+        <AIRuleGenerator />
 
         {showAddRule && (
           <div
@@ -131,7 +137,7 @@ export function FirewallRulesPage() {
               <button className="flex-1 rounded-lg border border-primary bg-primary/10 px-4 py-2 text-sm font-medium text-primary hover:bg-primary/20 transition-colors">
                 Create Rule
               </button>
-              <button 
+              <button
                 onClick={() => setShowAddRule(false)}
                 className="flex-1 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium hover:bg-muted transition-colors"
               >
@@ -183,12 +189,11 @@ export function FirewallRulesPage() {
                   };
 
                   return (
-                    <tr 
+                    <tr
                       key={rule.id}
                       onClick={() => setSelectedRule(rule.id)}
-                      className={`hover:bg-muted/10 transition-colors cursor-pointer ${
-                        rule.recommendation ? 'bg-[#fbbf24]/5' : ''
-                      } ${selectedRule === rule.id ? 'bg-primary/5' : ''}`}
+                      className={`hover:bg-muted/10 transition-colors cursor-pointer ${rule.recommendation ? 'bg-[#fbbf24]/5' : ''
+                        } ${selectedRule === rule.id ? 'bg-primary/5' : ''}`}
                     >
                       <td className="whitespace-nowrap px-4 py-4 text-sm font-mono">
                         {rule.id}
@@ -279,7 +284,7 @@ export function FirewallRulesPage() {
                 <div className="flex-1">
                   <h4 className="text-sm font-medium">{suggestion.title}</h4>
                   <p className="mt-1 text-xs text-muted-foreground">{suggestion.description}</p>
-                  
+
                   <div className="mt-3 space-y-2">
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-muted-foreground">Impact:</span>
@@ -292,7 +297,7 @@ export function FirewallRulesPage() {
                   </div>
 
                   <div className="mt-4 flex gap-2">
-                    <button 
+                    <button
                       onClick={() => handleApplyOptimization(suggestion.type)}
                       className="flex-1 rounded-lg border border-primary bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/20 transition-colors"
                     >

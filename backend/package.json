@@ -1,0 +1,40 @@
+{
+  "name": "firewallai-backend",
+  "version": "1.0.0",
+  "description": "FirewallAI Backend - Terminal, AI, and pfSense integration server",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "start:remote": "node server_remote.js",
+    "dev": "node --watch server.js",
+    "test": "echo \"No tests configured\" && exit 0"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.0",
+    "express": "^4.18.2",
+    "groq-sdk": "^0.3.2",
+    "node-pty": "^1.0.0",
+    "node-ssh": "^13.2.0",
+    "socket.io": "^4.8.3",
+    "winston": "^3.11.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "author": "FirewallAI Team",
+  "license": "MIT",
+  "keywords": [
+    "firewall",
+    "pfsense",
+    "terminal",
+    "pty",
+    "ai",
+    "security"
+  ]
+}

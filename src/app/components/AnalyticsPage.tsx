@@ -39,15 +39,17 @@ export function AnalyticsPage() {
     <div className="space-y-6">
       {/* Page header */}
       <div>
-        <h2>Analytics Dashboard</h2>
-        <p className="text-sm text-muted-foreground mt-1">Comprehensive firewall and network analytics</p>
+        <h2 className="text-2xl font-bold">Analytics Dashboard</h2>
+        <p className="text-sm text-muted-foreground mt-1">
+          Comprehensive firewall traffic analysis, protocol distribution, and blocked IP insights from your pfSense firewall
+        </p>
       </div>
 
       {/* Performance Metrics */}
       <div className="grid grid-cols-4 gap-4">
         {performanceMetrics.map((metric, index) => {
           const TrendIcon = metric.trend === 'up' ? TrendingUp : TrendingDown;
-          const trendColor = metric.positive 
+          const trendColor = metric.positive
             ? (metric.trend === 'up' ? 'text-success' : 'text-success')
             : (metric.trend === 'up' ? 'text-destructive' : 'text-success');
 
@@ -86,12 +88,12 @@ export function AnalyticsPage() {
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={trafficTrendData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(0, 217, 255, 0.1)" />
-                <XAxis 
-                  dataKey="date" 
+                <XAxis
+                  dataKey="date"
                   stroke="#71788a"
                   tick={{ fill: '#71788a', fontSize: 12 }}
                 />
-                <YAxis 
+                <YAxis
                   stroke="#71788a"
                   tick={{ fill: '#71788a', fontSize: 12 }}
                 />
@@ -194,7 +196,7 @@ export function AnalyticsPage() {
                   <td className="whitespace-nowrap px-4 py-4 text-sm">
                     <div className="flex items-center gap-2">
                       <div className="h-2 flex-1 max-w-[100px] rounded-full bg-muted overflow-hidden">
-                        <div 
+                        <div
                           className="h-full rounded-full bg-destructive"
                           style={{ width: `${Math.min((item.attempts / 250) * 100, 100)}%` }}
                         />
